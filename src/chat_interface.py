@@ -15,12 +15,21 @@ def transcribe_audio_file(uploaded_file):
         temp_wav.write(uploaded_file.read())
         temp_wav_path = temp_wav.name
 
-    # Transcribe the WAV file
-    with sr.AudioFile(temp_wav_path) as source:
-        audio_data = recognizer.record(source)
-        text = recognizer.recognize_google(audio_data)
-
-    return text
+    try:
+        # Transcribe the WAV file
+        with sr.AudioFile(temp_wav_path) as source:
+            audio_data = recognizer.record(source)
+            text = recognizer.recognize_google(audio_data)
+        return text
+    except Exception as e:
+        st.error(f"Audio transcription failed: {str(e)}")
+        return ""
+    finally:
+        try:
+            if os.path.exists(temp_wav_path):
+                os.remove(temp_wav_path)
+        except Exception:
+            pass
 
 
 def display_chat_interface():
@@ -35,7 +44,7 @@ def display_chat_interface():
     if "session_id" not in st.session_state:
         st.session_state.session_id = None
     if "model" not in st.session_state:
-        st.session_state.model = "gemini-1.5-flash"
+        st.session_state.model = "gemini-2.0-flash"
 
     # Display chat history
     for message in st.session_state.messages:

@@ -1,4 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
+import google.generativeai as genai
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
@@ -15,7 +16,9 @@ GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GOOGLE_API_KEY:
     raise ValueError("GEMINI_API_KEY not found in environment variables.")
 
-retriever = vectorstore.as_retriever(search_kwargs={"k": int(os.getenv("RETRIEVER_K"))})
+# Safe defaults for env-configurable values
+DEFAULT_RETRIEVER_K = int(os.getenv("RETRIEVER_K", "5"))
+DEFAULT_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.7"))
 
 output_parser = StrOutputParser()
 
@@ -41,13 +44,26 @@ qa_prompt = ChatPromptTemplate.from_messages([
     ("human", "{input}")
 ])
 
-def get_rag_chain(model="gemini-1.5-flash"):
+def get_rag_chain(model="gemini-2.0-flash"):
+    # Use the latest model names supported by Google Generative AI
+    allowed_models = {
+        "gemini-2.0-flash",
+        "gemini-2.0-pro"
+    }
+
+    model_to_use = model if model in allowed_models else "gemini-2.0-flash"
+
     llm = ChatGoogleGenerativeAI(
-        model=model,
+        model=model_to_use,
         google_api_key=GOOGLE_API_KEY,
-        temperature=float(os.getenv("LLM_TEMPERATURE")),
+        temperature=DEFAULT_TEMPERATURE,
+         transport="rest",  
+        api_version="v1"
     )
+
+    # Build retriever at call-time
+    retriever = vectorstore.as_retriever(search_kwargs={"k": DEFAULT_RETRIEVER_K})
     history_aware_retriever = create_history_aware_retriever(llm, retriever, contextualize_q_prompt)
     question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
-    rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)    
+    rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
     return rag_chain

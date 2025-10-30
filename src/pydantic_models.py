@@ -3,7 +3,7 @@ from enum import Enum
 from datetime import datetime
 
 class ModelName(str, Enum):
-    GEMINI_1_5_FLASH = "gemini-1.5-flash"
+    GEMINI_1_5_FLASH = "gemini-2.0-flash"
 
 class QueryInput(BaseModel):
     question: str

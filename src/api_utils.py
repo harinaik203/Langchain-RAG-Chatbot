@@ -6,7 +6,7 @@ import streamlit as st
 load_dotenv()
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 
-def get_api_response(question, session_id, model="gemini-1.5-flash"):
+def get_api_response(question, session_id, model="gemini-2.0-flash"):
     headers = {'accept': 'application/json', 'Content-Type': 'application/json'}
     data = {"question": question, "model": model}
     if session_id:
