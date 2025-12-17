@@ -58,59 +58,8 @@ Chat History: Persists and displays the conversation history for each session, s
 Model Selection: Allows users to choose the language model (currently Gemini-1.5-Flash) for response generation.
 Document Management: View a list of uploaded documents and delete them as needed through the sidebar.
 
-### Setup Instructions
-Follow these steps to set up and run the Langchain RAG Chatbot locally.
-Prerequisites
-
-Python 3.8+: Ensure you have a compatible Python version installed.
-MongoDB: A running MongoDB instance (local or cloud-based) for storing chat logs and metadata.
-Google Generative AI API Key: Obtain an API key from Google for accessing the Gemini-1.5-Flash model.
-
-### Installation
-
-1. Clone the Repository:
-```bash
-    git clone https://github.com/yourusername/RAG-VOICE.git
-    cd RAG-VOICE
-```
 
 
-2. Create and Activate a Virtual Environment:
-```bash    
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-
-3. Install Dependencies:Install all required Python packages listed in requirements.txt:
-```bash
-pip install -r requirements.txt
-```
-
-
-Set Up Environment Variables:Create a .env file in the project root and add the following:
-
-DB_URI: Your MongoDB connection string.
-DB_NAME: Name of the database to use.
-GEMINI_API_KEY: Your Google API key.
-API_URL: The FastAPI backend URL (default is local).
-RETRIEVER_K: Number of document chunks to retrieve (default is 5).
-LLM_TEMPERATURE: Controls the creativity of the language model (default is 0.7).
-
-
-Running the Application
-
-Start the FastAPI Backend:Launch the backend server in one terminal:
-``` bash
-uvicorn src.main:app --reload
-```
-
-Start the Streamlit Frontend:In a separate terminal, activate the virtual environment again (if needed) and run:
-```bash
-streamlit run src/streamlit_app.py
-```
-
-![Flowchart](Images/RAG.png)
 
 
 
